@@ -20,7 +20,6 @@ import util
 import time
 import search
 
-# --- IMPORT ALL NECESSARY HEURISTICS FROM search.py ---
 from search import manhattan_heuristic, euclidean_heuristic
 
 class GoWestAgent(Agent):
@@ -32,11 +31,6 @@ class GoWestAgent(Agent):
             return Directions.STOP
 
 class SearchAgent(Agent):
-    """
-    This very general search agent finds a path using a supplied search
-    algorithm for a supplied search problem, then returns actions to follow that
-    path.
-    """
     def __init__(self, fn='depth_first_search', prob='PositionSearchProblem', heuristic='null_heuristic'):
         if fn not in dir(search):
             raise AttributeError(fn + ' is not a search function in search.py.')
@@ -44,11 +38,9 @@ class SearchAgent(Agent):
         if 'heuristic' not in func.__code__.co_varnames and 'heuristics' not in func.__code__.co_varnames:
             self.search_function = func
         elif 'heuristics' in func.__code__.co_varnames:
-            # Handle SMHA* for PositionSearchProblem
             my_heuristics = [manhattan_heuristic, euclidean_heuristic]
             self.search_function = lambda x: func(x, heuristics=my_heuristics)
         else:
-            # Handle A*
             if hasattr(search, heuristic):
                 heur = getattr(search, heuristic)
             else:
@@ -77,9 +69,6 @@ class SearchAgent(Agent):
             return Directions.STOP
 
 class PositionSearchProblem(search.SearchProblem):
-    """
-    A search problem for finding paths to a particular point on the pacman board.
-    """
     def __init__(self, game_state, cost_fn = lambda x: 1, goal=(1,1), start=None, warn=True, visualize=True):
         self.walls = game_state.get_walls()
         self.start_state = game_state.get_pacman_position()
@@ -134,9 +123,6 @@ def maze_distance(point1, point2, game_state):
     return len(search.breadth_first_search(prob))
 
 class FoodSearchProblem(search.SearchProblem):
-    """
-    A search problem for finding a path that collects all the food.
-    """
     def __init__(self, starting_game_state):
         self.start = (starting_game_state.get_pacman_position(), starting_game_state.get_food())
         self.walls = starting_game_state.get_walls()
@@ -167,13 +153,10 @@ class FoodSearchProblem(search.SearchProblem):
             cost += 1
         return cost
 
-# --- HEURISTICS FOR THE FOOD PROBLEM ---
 def food_heuristic(state, problem):
     position, food_grid = state
     food_locations = food_grid.as_list()
-    if not food_locations:
-        return 0
-    
+    if not food_locations: return 0
     max_distance = 0
     for food_pos in food_locations:
         distance = maze_distance(position, food_pos, problem.starting_game_state)
@@ -184,8 +167,7 @@ def food_heuristic(state, problem):
 def mst_food_heuristic(state, problem):
     position, food_grid = state
     food_locations = food_grid.as_list()
-    if not food_locations:
-        return 0
+    if not food_locations: return 0
     nodes = [position] + food_locations
     if len(nodes) <= 2:
         return maze_distance(nodes[0], nodes[1], problem.starting_game_state) if len(nodes) == 2 else 0
@@ -243,4 +225,3 @@ class AStarFoodSearchAgent(SearchAgent):
     def __init__(self):
         self.search_function = lambda prob: search.a_star_search(prob, food_heuristic)
         self.search_type = FoodSearchProblem
-

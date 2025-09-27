@@ -146,14 +146,14 @@ class MinimaxGhost(GhostAgent):
                 if dist < min_dist_to_ghost:
                     min_dist_to_ghost = dist
         
-        if min_dist_to_ghost <= 1:
+        if min_dist_to_ghost != float('inf') and min_dist_to_ghost <= 1:
             return -float('inf')
         
         # Penalize being close to ghosts and reward being far away
-        score -= 1.5 / min_dist_to_ghost
+        if min_dist_to_ghost != float('inf'):
+            score -= 1.5 / min_dist_to_ghost
         
         # Penalize for remaining food and capsules
         score -= 2 * state.get_num_food()
         score -= 20 * len(state.get_capsules())
         return score
-

@@ -285,7 +285,7 @@ def food_heuristic(state, problem):
     # Heuristic: distance to the furthest food dot
     max_dist = 0
     for food in food_list:
-        dist = util.manhattanDistance(position, food)
+        dist = util.manhattan_distance(position, food)
         if dist > max_dist:
             max_dist = dist
     return max_dist
@@ -345,4 +345,3 @@ def mst_food_heuristic(state, problem):
             min_dist_to_mst = dist
             
     return mst_cost + min_dist_to_mst
-

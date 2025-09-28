@@ -231,7 +231,7 @@ def read_command(argv):
     parser.add_option("--replay", dest="game_to_replay", default=None)
     parser.add_option("-a","--agent_args", dest="agent_args")
     parser.add_option("-x","--num_training", dest="num_training", type="int", default=0)
-    parser.add_option("--frame_time", dest="frame_time", type="float", default=0.1)
+    parser.add_option("--frame_time", dest="frame_time", type="float", default=0.5)
     parser.add_option("-c","--catch_exceptions", action="store_true", dest="catch_exceptions", default=False)
     parser.add_option("--timeout", dest="timeout", type="int", default=30)
 

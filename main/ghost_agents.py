@@ -10,39 +10,38 @@
 # and Dan Klein. Student side autograding was added by Brad Miller, Nick Hay,
 # and Pieter Abbeel.
 
-from game import Agent, Actions, Directions
 import random
-from util import manhattanDistance
 import util
+from game import Agent, Actions, Directions
+from util import manhattanDistance  # keep name as exported by util in this codebase
 
 
 class GhostAgent(Agent):
     """
-    Base ghost agent class, with a robust action selection method.
+    Base ghost agent with robust distribution-based selection.
     """
+
     def __init__(self, index):
         self.index = index
 
     def get_action(self, state):
-        """
-        Selects an action robustly from the distribution.
-        """
         dist = self.get_distribution(state)
         if not dist or len(dist) == 0:
             return Directions.STOP
-        
-        # Manually implement weighted random choice for maximum compatibility
+
         total = sum(dist.values())
         if total == 0:
-            return random.choice(list(dist.keys())) if list(dist.keys()) else Directions.STOP
-        choice = random.uniform(0, total)
-        upto = 0
+            keys = list(dist.keys())
+            return random.choice(keys) if keys else Directions.STOP
+
+        r = random.uniform(0, total)
+        upto = 0.0
         for action, prob in dist.items():
-            if upto + prob >= choice:
+            if upto + prob >= r:
                 return action
             upto += prob
-        return random.choice(list(dist.keys()))
-
+        keys = list(dist.keys())
+        return random.choice(keys) if keys else Directions.STOP
 
     def get_distribution(self, state):
         util.raise_not_defined()
@@ -50,8 +49,9 @@ class GhostAgent(Agent):
 
 class RandomGhost(GhostAgent):
     """
-    A ghost that chooses a legal action uniformly at random.
+    Chooses legal actions uniformly at random.
     """
+
     def get_distribution(self, state):
         dist = util.Counter()
         for a in state.get_legal_actions(self.index):
@@ -62,98 +62,93 @@ class RandomGhost(GhostAgent):
 
 class DirectionalGhost(GhostAgent):
     """
-    A ghost that prefers to rush Pacman, or flee when scared.
+    Rushes Pacman when brave, flees when scared.
     """
-    def __init__(self, index, prob_attack=0.8, prob_scaredFlee=0.8):
+
+    def __init__(self, index, prob_attack=0.8, prob_scared_flee=0.8):
         self.index = index
         self.prob_attack = prob_attack
-        self.prob_scaredFlee = prob_scaredFlee
+        self.prob_scared_flee = prob_scared_flee
 
     def get_distribution(self, state):
         ghost_state = state.get_ghost_state(self.index)
-        legal_actions = state.get_legal_actions(self.index)
+        legal = state.get_legal_actions(self.index)
         pos = state.get_ghost_position(self.index)
-        is_scared = ghost_state.scared_timer > 0
-        speed = 0.5 if is_scared else 1.0
+        scared = ghost_state.scared_timer > 0
+        speed = 0.5 if scared else 1.0
 
-        action_vectors = [Actions.direction_to_vector(a, speed) for a in legal_actions]
-        new_positions = [(pos[0] + v[0], pos[1] + v[1]) for v in action_vectors]
-        pacman_position = state.get_pacman_position()
+        vectors = [Actions.direction_to_vector(a, speed) for a in legal]
+        next_positions = [(pos[0] + vx, pos[1] + vy) for (vx, vy) in vectors]
+        pac = state.get_pacman_position()
+        dists = [manhattanDistance(p, pac) for p in next_positions]
 
-        distances_to_pacman = [manhattanDistance(p, pacman_position) for p in new_positions]
-        if is_scared:
-            best_score = max(distances_to_pacman)
-            best_prob = self.prob_scaredFlee
+        if scared:
+            best_score = max(dists)
+            best_prob = self.prob_scared_flee
         else:
-            best_score = min(distances_to_pacman)
+            best_score = min(dists)
             best_prob = self.prob_attack
 
-        best_actions = [action for action, distance in zip(legal_actions, distances_to_pacman)
-                       if distance == best_score]
+        best_actions = [a for a, d in zip(legal, dists) if d == best_score]
 
         dist = util.Counter()
         if best_actions:
             for a in best_actions:
                 dist[a] = best_prob / len(best_actions)
-        if legal_actions:
-            for a in legal_actions:
-                dist[a] += (1 - best_prob) / len(legal_actions)
+        if legal:
+            for a in legal:
+                dist[a] += (1.0 - best_prob) / len(legal)
         dist.normalize()
         return dist
 
+
 class MinimaxGhost(GhostAgent):
     """
-    An intelligent ghost using minimax with an improved evaluation function.
+    A ghost using minimax with a simple evaluation.
+    Note: agent index 0 is Pacman; ghosts are >= 1.
     """
+
     def __init__(self, index, depth=2):
         self.index = index
         self.depth = depth
 
-    def get_action(self, gameState):
-        _, bestAction = self._minimax(gameState, self.depth * gameState.get_num_agents(), self.index)
-        return bestAction if bestAction is not None else Directions.STOP
+    def get_action(self, game_state):
+        _, action = self._minimax(game_state, self.depth * game_state.get_num_agents(), self.index)
+        return action if action is not None else Directions.STOP
 
-    def _minimax(self, gameState, depth, agentIndex):
-        if gameState.is_win() or gameState.is_lose() or depth == 0:
-            return (self._evaluate(gameState), None)
+    def _minimax(self, state, depth, agent_index):
+        if state.is_win() or state.is_lose() or depth == 0:
+            return self._evaluate(state), None
 
-        numAgents = gameState.get_num_agents()
-        nextAgent = (agentIndex + 1) % numAgents
-        
-        legalActions = gameState.get_legal_actions(agentIndex)
-        if not legalActions:
-            return (self._evaluate(gameState), None)
+        num_agents = state.get_num_agents()
+        next_agent = (agent_index + 1) % num_agents
+        actions = state.get_legal_actions(agent_index)
+        if not actions:
+            return self._evaluate(state), None
 
         results = []
-        for action in legalActions:
-            successorState = gameState.generate_successor(agentIndex, action)
-            score, _ = self._minimax(successorState, depth - 1, nextAgent)
-            results.append((score, action))
+        for a in actions:
+            succ = state.generate_successor(agent_index, a)
+            score, _ = self._minimax(succ, depth - 1, next_agent)
+            results.append((score, a))
 
-        if agentIndex == 0: # Pacman is agent 0 (max player)
+        if agent_index == 0:
             return max(results, key=lambda x: x[0])
-        else: # Ghosts are other agents (min players)
-            return min(results, key=lambda x: x[0])
+        return min(results, key=lambda x: x[0])
 
     def _evaluate(self, state):
         score = state.get_score()
-        pacmanPos = state.get_pacman_position()
-        
-        min_dist_to_ghost = float('inf')
-        for ghost_state in state.get_ghost_states():
-            if ghost_state.scared_timer == 0:
-                dist = manhattanDistance(pacmanPos, ghost_state.get_position())
-                if dist < min_dist_to_ghost:
-                    min_dist_to_ghost = dist
-        
-        if min_dist_to_ghost != float('inf') and min_dist_to_ghost <= 1:
+        pac = state.get_pacman_position()
+        min_ghost = float('inf')
+        for g in state.get_ghost_states():
+            if g.scared_timer == 0:
+                d = manhattanDistance(pac, g.get_position())
+                if d < min_ghost:
+                    min_ghost = d
+        if min_ghost != float('inf') and min_ghost <= 1:
             return -float('inf')
-        
-        # Penalize being close to ghosts and reward being far away
-        if min_dist_to_ghost != float('inf'):
-            score -= 1.5 / min_dist_to_ghost
-        
-        # Penalize for remaining food and capsules
+        if min_ghost != float('inf'):
+            score -= 1.5 / min_ghost
         score -= 2 * state.get_num_food()
         score -= 20 * len(state.get_capsules())
         return score

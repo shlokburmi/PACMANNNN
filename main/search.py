@@ -238,3 +238,4 @@ dfs = depth_first_search
 astar = a_star_search
 ucs = uniform_cost_search
 smha = smha_search
+

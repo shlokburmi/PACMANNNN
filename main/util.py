@@ -1,6 +1,7 @@
 from __future__ import division
 from __future__ import print_function
 
+
 # util.py
 # -------
 # Licensing Information:  You are free to use or extend these projects for
@@ -43,6 +44,38 @@ import sys
 import inspect
 import heapq, random
 import io
+import game
+
+def maze_distance(point1, point2, gameState):
+    """
+    Returns the maze distance between any two points, using BFS.
+    This is a helper function used by heuristic code.
+    """
+    start = point1
+    goal = point2
+
+    walls = gameState.get_walls()
+    if walls[start[0]][start[1]] or walls[goal[0]][goal[1]]:
+        raise Exception('point1 or point2 is a wall!')
+
+    queue = Queue()
+    queue.push((start, 0))
+    visited = set()
+
+    while not queue.is_empty():
+        current, dist = queue.pop()
+        if current == goal:
+            return dist
+        if current in visited:
+            continue
+        visited.add(current)
+
+        x, y = current
+        for dx, dy in [(-1,0), (1,0), (0,-1), (0,1)]:
+            nx, ny = x + dx, y + dy
+            if not walls[nx][ny] and (nx, ny) not in visited:
+                queue.push(((nx, ny), dist + 1))
+    raise Exception('No path found between points')
 
 
 class FixedRandom(object):

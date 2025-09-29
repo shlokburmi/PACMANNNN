@@ -1,12 +1,52 @@
-# SearchAgents.py
-# ---------------
-# Import all classes from search_agents.py
-from search_agents import *
-
-# Also import the ghost agents to ensure they're available
+from search import SearchProblem
 from game import Agent, Actions, Directions
 import random
 import util
+import time
+
+
+class FoodSearchProblem(SearchProblem):
+    """
+    A search problem associated with finding a path that collects all the food
+    (dots) in a Pacman game.
+    """
+
+    def __init__(self, startingGameState):
+        self.start = (startingGameState.get_pacman_position(), startingGameState.get_food())
+        self.walls = startingGameState.get_walls()
+        self.startingGameState = startingGameState
+
+    def get_start_state(self):
+        return self.start
+
+    def is_goal_state(self, state):
+        return state[1].count() == 0  # All food eaten
+
+    def get_successors(self, state):
+        successors = []
+        x, y = state[0]
+        food = state[1]
+        for dx, dy in [(0,1), (1,0), (0,-1), (-1,0)]:
+            nextx, nexty = x + dx, y + dy
+            if not self.walls[nextx][nexty]:
+                nextFood = food.copy()
+                nextFood[nextx][nexty] = False
+                action = Actions.vector_to_direction((dx, dy))  # convert vector to action string
+                successors.append((((nextx, nexty), nextFood), action, 1))
+        return successors
+
+    def get_cost_of_actions(self, actions):
+        if actions is None:
+            return 999999
+        x, y = self.start[0]
+        cost = 0
+        for action in actions:
+            dx, dy = Actions.direction_to_vector(action)
+            x, y = x + dx, y + dy
+            if self.walls[x][y]:
+                return 999999
+            cost += 1
+        return cost
 
 
 class GhostAgent(Agent):

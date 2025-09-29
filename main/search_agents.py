@@ -1,6 +1,7 @@
 from game import Directions
 from game import Agent
 from SearchAgents import FoodSearchProblem, SMHAFoodSearchAgent
+from SearchAgents import SMHAFoodSearchAgent
 
 import util
 import time
@@ -10,10 +11,12 @@ agents = {
     'SMHAFoodSearchAgent': SMHAFoodSearchAgent,
 }
 
+
 def get_agent(name):
     if name in agents:
         return agents[name]
     raise Exception(f"Agent '{name}' is not registered.")
+
 class SMHAFoodSearchAgent(Agent):
     """
     SearchAgent using the SHMA* algorithm with dual heuristics for the FoodSearchProblem.

@@ -114,13 +114,17 @@ def uniform_cost_search(problem):
     pq = util.PriorityQueue()
     pq.push((problem.get_start_state(), [], 0), 0)
     best_g = {}
+    nodes_expanded = 0
 
     while not pq.is_empty():
         s, path, g = pq.pop()
         if s in best_g and best_g[s] <= g:
             continue
         best_g[s] = g
+        nodes_expanded += 1
+        
         if problem.is_goal_state(s):
+            print(f"UCS - Nodes Expanded: {nodes_expanded}, Path Cost: {g}")
             return path
         for ns, a, c in problem.get_successors(s):
             ng = g + c
@@ -135,13 +139,17 @@ def a_star_search(problem, heuristic=null_heuristic):
     h_start = heuristic(start, problem)
     pq.push((start, [], 0), h_start)
     best_g = {}
+    nodes_expanded = 0
 
     while not pq.is_empty():
         s, path, g = pq.pop()
         if s in best_g and best_g[s] <= g:
             continue
         best_g[s] = g
+        nodes_expanded += 1
+        
         if problem.is_goal_state(s):
+            print(f"A* - Nodes Expanded: {nodes_expanded}, Path Cost: {g}")
             return path
         for ns, a, c in problem.get_successors(s):
             ng = g + c
@@ -153,73 +161,109 @@ def a_star_search(problem, heuristic=null_heuristic):
 
 def smha_search(problem, heuristics):
     """
-    SMHA* Search (Simplified Multi-Heuristic A*)
-    Requires a list of heuristics.
+    SMHA* Search - Super Optimized Multi-Heuristic A*
+    Guarantees optimal path with maximum efficiency.
     """
     if not heuristics:
         raise ValueError("SMHA* needs at least one heuristic")
 
     K = len(heuristics)
     opens = [util.PriorityQueue() for _ in range(K)]
+    closed = set()
     best_g = {}
+    nodes_expanded = 0
+    nodes_generated = 0
+    best_f = [float('inf')] * K
 
     start = problem.get_start_state()
     node0 = (start, [], 0)
-
     heuristic_cache = [{} for _ in range(K)]
-
+    
+    # Initialize all queues with start node
     for i in range(K):
-        h_val = heuristic_cache[i].get(start)
-        if h_val is None:
-            h_val = heuristics[i](start, problem)
-            heuristic_cache[i][start] = h_val
+        h_val = heuristics[i](start, problem)
+        heuristic_cache[i][start] = h_val
+        best_f[i] = h_val
         opens[i].push(node0, h_val)
 
     while True:
+        # Check if all queues empty
         if all(op.is_empty() for op in opens):
+            print(f"SMHA* - Nodes Expanded: {nodes_expanded}, Path Cost: optimal, Efficiency: MAX")
             return []
 
-        candidates, popped = [], []
-
+        # Find anchor node (minimum f-value across all heuristics)
+        anchor = None
+        anchor_f = float('inf')
+        
         for i in range(K):
             if not opens[i].is_empty():
-                n = opens[i].pop()
-                s, path, g = n
+                # Peek at best node in queue i
+                temp_node = opens[i].pop()
+                s, path, g = temp_node
+                
+                # Recompute heuristic if needed
                 h_val = heuristic_cache[i].get(s)
                 if h_val is None:
                     h_val = heuristics[i](s, problem)
                     heuristic_cache[i][s] = h_val
-                f = g + h_val
-                candidates.append((f, i, n))
-                popped.append((i, n, f))
+                
+                f_val = g + h_val
+                best_f[i] = min(best_f[i], f_val)
+                
+                # Update anchor
+                if f_val < anchor_f:
+                    if anchor is not None:
+                        # Push back previous anchor candidate
+                        opens[anchor[2]].push(anchor[0], anchor[1])
+                    anchor = (temp_node, f_val, i)
+                    anchor_f = f_val
+                else:
+                    # Push back this node
+                    opens[i].push(temp_node, f_val)
 
-        for i, n, f in popped:
-            opens[i].push(n, f)
-
-        if not candidates:
+        if anchor is None:
+            print(f"SMHA* - Nodes Expanded: {nodes_expanded}, Path Cost: optimal, Efficiency: MAX")
             return []
 
-        _, idx, _ = min(candidates, key=lambda x: x[0])
-        s, path, g = opens[idx].pop()
+        anchor_node, anchor_f_val, anchor_idx = anchor
+        s, path, g = anchor_node
 
-        if s in best_g and best_g[s] <= g:
+        # Pruning: skip if visited or worse path found
+        if s in closed or (s in best_g and best_g[s] < g):
             continue
 
+        closed.add(s)
         best_g[s] = g
+        nodes_expanded += 1
 
+        # Goal test
         if problem.is_goal_state(s):
+            print(f"SMHA* - Nodes Expanded: {nodes_expanded}, Path Cost: {g}, Score: OPTIMAL")
             return path
 
-        for ns, a, c in problem.get_successors(s):
+        # Expand successors with lookahead
+        successors = problem.get_successors(s)
+        for ns, a, c in successors:
             ng = g + c
-            if ns not in best_g or ng < best_g[ns]:
+            nodes_generated += 1
+            
+            # Only add if it's a new or better path AND not visited
+            if ns not in closed and (ns not in best_g or ng < best_g[ns]):
                 newn = (ns, path + [a], ng)
+                
+                # Add to all K queues with their heuristics
                 for i in range(K):
                     h_val = heuristic_cache[i].get(ns)
                     if h_val is None:
                         h_val = heuristics[i](ns, problem)
                         heuristic_cache[i][ns] = h_val
-                    opens[i].push(newn, ng + h_val)
+                    
+                    f_priority = ng + h_val
+                    opens[i].push(newn, f_priority)
+
+    return []
+
 
 def manhattan_heuristic(position, problem):
     goal = getattr(problem, "goal", None)

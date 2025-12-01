@@ -1,0 +1,27 @@
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+Traceback (most recent call last):
+  File "S:\NIIT\Sem 5\A.I\SHMA improve\SHMANew\main\pacman.py", line 354, in <module>
+    run_games(**args)
+    ~~~~~~~~~^^^^^^^^
+  File "S:\NIIT\Sem 5\A.I\SHMA improve\SHMANew\main\pacman.py", line 335, in run_games
+    game.run()
+    ~~~~~~~~^^
+  File "S:\NIIT\Sem 5\A.I\SHMA improve\SHMANew\main\game.py", line 792, in run
+    action = agent.get_action(observation)
+  File "S:\NIIT\Sem 5\A.I\SHMA improve\SHMANew\main\agents.py", line 237, in get_action
+    self.actions = search.ultimate_smha_search(problem, self.heuristics)
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "S:\NIIT\Sem 5\A.I\SHMA improve\SHMANew\main\search.py", line 210, in ultimate_smha_search
+    print(f"  \u2713 Optimized weights: {[f'{w:.3f}' for w in optimized_weights]}")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2713' in position 2: character maps to <undefined>

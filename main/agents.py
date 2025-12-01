@@ -2,8 +2,9 @@ import search
 import util
 import math
 
+
 class PositionSearchProblem(search.SearchProblem):
-    """A search problem for finding paths through mazes."""
+    """Position search problem"""
     
     def __init__(self, game_state, agent_index=0):
         self.walls = game_state.data.layout.walls
@@ -36,7 +37,7 @@ class PositionSearchProblem(search.SearchProblem):
 
 
 class FoodSearchProblem(search.SearchProblem):
-    """A search problem for finding paths to food in mazes."""
+    """Food search problem"""
     
     def __init__(self, game_state):
         self.walls = game_state.data.layout.walls
@@ -68,8 +69,10 @@ class FoodSearchProblem(search.SearchProblem):
         return len(actions)
 
 
+# ===== HEURISTICS =====
+
 def manhattan_heuristic(state, problem):
-    """Manhattan distance - optimal for grid with 4-move"""
+    """Manhattan distance"""
     if hasattr(problem, 'goal_pos'):
         x1, y1 = state
         goals = problem.goal_pos.as_list()
@@ -79,7 +82,7 @@ def manhattan_heuristic(state, problem):
 
 
 def euclidean_heuristic(state, problem):
-    """Euclidean distance - admissible heuristic"""
+    """Euclidean distance"""
     if hasattr(problem, 'goal_pos'):
         x1, y1 = state
         goals = problem.goal_pos.as_list()
@@ -89,7 +92,7 @@ def euclidean_heuristic(state, problem):
 
 
 def chebyshev_heuristic(state, problem):
-    """Chebyshev distance - looser bound but good pruning"""
+    """Chebyshev distance"""
     if hasattr(problem, 'goal_pos'):
         x1, y1 = state
         goals = problem.goal_pos.as_list()
@@ -99,7 +102,7 @@ def chebyshev_heuristic(state, problem):
 
 
 def diagonal_heuristic(state, problem):
-    """Diagonal distance with movement cost"""
+    """Diagonal distance"""
     if hasattr(problem, 'goal_pos'):
         x1, y1 = state
         goals = problem.goal_pos.as_list()
@@ -115,7 +118,7 @@ def diagonal_heuristic(state, problem):
 
 
 def combined_heuristic(state, problem):
-    """Combined heuristic - maximum of all admissible heuristics"""
+    """Combined maximum heuristic"""
     if hasattr(problem, 'goal_pos'):
         h1 = manhattan_heuristic(state, problem)
         h2 = chebyshev_heuristic(state, problem)
@@ -124,32 +127,7 @@ def combined_heuristic(state, problem):
     return 0
 
 
-class SMHAFoodSearchAgent:
-    def __init__(self, index=0):
-        self.actions = []
-        self.index = index
-        # Use 5 powerful heuristics for maximum pruning
-        self.heuristics = [
-            search.euclidean_heuristic,
-            manhattan_heuristic,
-            chebyshev_heuristic,
-            diagonal_heuristic,
-            combined_heuristic
-        ]
-
-    def get_action(self, state):
-        if not self.actions:
-            problem = FoodSearchProblem(state)
-            self.actions = search.smha_search(problem, self.heuristics)
-        
-        if self.actions:
-            return self.actions.pop(0)
-        else:
-            return 'Stop'
-
-    def get_legal_actions(self, state):
-        return state.get_legal_actions(self.index)
-
+# ===== SEARCH AGENT FOR COMPARISONS =====
 
 class SearchAgent:
     def __init__(self, index=0, fn='depth_first_search', heuristic='nullHeuristic', prob='PositionSearchProblem'):
@@ -160,11 +138,17 @@ class SearchAgent:
         
         self.search_function = getattr(search, fn_name)
         
+        # Look for heuristic in agents.py first, then search.py
         if heuristic != 'nullHeuristic':
             heuristic_name = self._camel_to_snake(heuristic)
-            if heuristic_name not in dir(search):
-                raise AttributeError(f"Heuristic '{heuristic}' not found in search module")
-            self.heuristic = getattr(search, heuristic_name)
+            # Check agents.py (local) first
+            if heuristic_name in globals():
+                self.heuristic = globals()[heuristic_name]
+            # Then check search.py
+            elif heuristic_name in dir(search):
+                self.heuristic = getattr(search, heuristic_name)
+            else:
+                raise AttributeError(f"Heuristic '{heuristic_name}' not found in agents or search module")
         else:
             self.heuristic = search.null_heuristic
         
@@ -190,10 +174,67 @@ class SearchAgent:
     def get_action(self, state):
         if not self.actions:
             problem = self.problem_class(state)
-            if self.search_function.__name__ in ['a_star_search', 'smha_search']:
+            if self.search_function.__name__ in ['astar_search', 'smha_search', 'ultimate_smha_search']:
                 self.actions = self.search_function(problem, self.heuristic)
             else:
                 self.actions = self.search_function(problem)
+        
+        if self.actions:
+            return self.actions.pop(0)
+        else:
+            return 'Stop'
+
+    def get_legal_actions(self, state):
+        return state.get_legal_actions(self.index)
+
+
+class SMHAFoodSearchAgent:
+    def __init__(self, index=0):
+        self.actions = []
+        self.index = index
+        self.heuristics = [
+            euclidean_heuristic,
+            manhattan_heuristic,
+            chebyshev_heuristic,
+            diagonal_heuristic,
+            combined_heuristic
+        ]
+
+    def get_action(self, state):
+        if not self.actions:
+            problem = FoodSearchProblem(state)
+            self.actions = search.smha_search(problem, self.heuristics)
+        
+        if self.actions:
+            return self.actions.pop(0)
+        else:
+            return 'Stop'
+
+    def get_legal_actions(self, state):
+        return state.get_legal_actions(self.index)
+
+
+# ===== ULTIMATE AGENT =====
+
+class UltimateSearchAgent:
+    """
+    ULTIMATE AGENT: Combines SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+    """
+    def __init__(self, index=0):
+        self.actions = []
+        self.index = index
+        self.heuristics = [
+            euclidean_heuristic,
+            manhattan_heuristic,
+            chebyshev_heuristic,
+            diagonal_heuristic,
+            combined_heuristic
+        ]
+
+    def get_action(self, state):
+        if not self.actions:
+            problem = FoodSearchProblem(state)
+            self.actions = search.ultimate_smha_search(problem, self.heuristics)
         
         if self.actions:
             return self.actions.pop(0)

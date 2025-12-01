@@ -1,0 +1,28 @@
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.628', '0.221', '0.001', '0.368', '0.048']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 92
+  - Nodes Pruned: 334
+  - Path Cost: 19
+  - Pruning Efficiency: 78.4%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+Pacman emerges victorious! Score: 491
+Average Score: 491.0
+Scores:         491.0
+Win Rate:       1/1 (1.00)
+Record:         Win

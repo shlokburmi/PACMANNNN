@@ -51,6 +51,194 @@ def score_evaluation_function(currentGameState):
     """
     return currentGameState.get_score()
 
+class UltimateSearchAgent(MultiAgentSearchAgent):
+    """
+    The Ultimate Agent:
+    1. Iterative Deepening: Searches depth 1, then 2, then 3... until time runs out.
+    2. Move Ordering: Sorts moves by a quick heuristic to maximize pruning.
+    3. Rich Evaluation: Considers capsules, accurate maze distances, and trapping.
+    """
+
+    def get_action(self, gameState):
+        import time
+        start_time = time.time()
+        time_limit = 0.9  # Leave a safety buffer (usually 1s limit)
+
+        best_action = Directions.STOP
+        
+        # iterative deepening loop
+        # We start at depth 1 and go deeper until we risk timeout
+        try:
+            for current_depth in range(1, 25): # 25 is practically infinite for Pacman
+                
+                # Check time before starting a new depth
+                if time.time() - start_time > time_limit:
+                    break
+                
+                # Run Alpha-Beta for the current depth
+                score, action = self.alpha_beta_search(gameState, 0, current_depth, 
+                                                       float('-inf'), float('inf'), 
+                                                       start_time, time_limit)
+                
+                # If we didn't timeout inside the search, update best_action
+                if time.time() - start_time < time_limit:
+                    best_action = action
+                else:
+                    break # Timeout occurred during search, discard partial result
+                    
+        except TimeoutError:
+            pass # Return the best action found in the last fully completed depth
+
+        return best_action
+
+    def alpha_beta_search(self, state, agent_index, depth, alpha, beta, start_time, time_limit):
+        # Time check inside recursion
+        if time.time() - start_time > time_limit:
+            raise TimeoutError("Time limit exceeded")
+
+        num_agents = state.get_num_agents()
+        
+        # Terminal checks
+        if state.is_win() or state.is_lose() or depth == 0:
+            return ultimate_evaluation_function(state), Directions.STOP
+
+        # Prepare for next agent/depth
+        next_agent = (agent_index + 1) % num_agents
+        next_depth = depth - 1 if next_agent == 0 else depth
+
+        legal_moves = state.get_legal_actions(agent_index)
+        if not legal_moves:
+            return ultimate_evaluation_function(state), Directions.STOP
+
+        # MOVE ORDERING: Sort moves to improve pruning efficiency
+        # We assume 'better' moves (eating food, running from ghost) give better static scores
+        if agent_index == 0: # Pacman
+            # Sort descending (best first)
+            legal_moves.sort(key=lambda a: ultimate_evaluation_function(state.generate_successor(agent_index, a)), reverse=True)
+        
+        best_action = legal_moves[0]
+
+        if agent_index == 0: # Max (Pacman)
+            value = float('-inf')
+            for action in legal_moves:
+                successor = state.generate_successor(agent_index, action)
+                score, _ = self.alpha_beta_search(successor, next_agent, next_depth, alpha, beta, start_time, time_limit)
+                
+                if score > value:
+                    value = score
+                    best_action = action
+                
+                if value > beta:
+                    return value, best_action
+                alpha = max(alpha, value)
+                
+        else: # Min (Ghosts)
+            value = float('inf')
+            for action in legal_moves:
+                successor = state.generate_successor(agent_index, action)
+                score, _ = self.alpha_beta_search(successor, next_agent, next_depth, alpha, beta, start_time, time_limit)
+                
+                if score < value:
+                    value = score
+                    best_action = action
+                
+                if value < alpha:
+                    return value, best_action
+                beta = min(beta, value)
+
+        return value, best_action
+
+
+def ultimate_evaluation_function(currentGameState):
+    """
+    A comprehensive evaluation function that prioritizes:
+    1. Survival (Distance to active ghosts)
+    2. Capsules (Vital for high scores)
+    3. Scared Ghosts (High point value)
+    4. Food (Using Maze Distance instead of Manhattan for accuracy)
+    """
+    # Useful data
+    pacman_pos = currentGameState.get_pacman_position()
+    food_list = currentGameState.get_food().as_list()
+    ghost_states = currentGameState.get_ghost_states()
+    capsules = currentGameState.get_capsules()
+    current_score = currentGameState.get_score()
+
+    # --- Weights (Tune these parameters to change behavior) ---
+    w_food = 10.0
+    w_capsule = 200.0
+    w_scared_ghost = 200.0
+    w_active_ghost = -1000.0 # High negative weight for danger
+    
+    total_score = current_score
+
+    # 1. GHOST LOGIC
+    for ghost in ghost_states:
+        ghost_pos = ghost.get_position()
+        dist = util.manhattanDistance(pacman_pos, ghost_pos)
+        
+        if ghost.scared_timer > 0:
+            # SCARED GHOST: Chase it if we can reach it in time
+            # We use 'dist < timer' to ensure we don't chase a ghost turning back to dangerous
+            if dist < ghost.scared_timer: 
+                total_score += w_scared_ghost / (dist + 1)
+        else:
+            # ACTIVE GHOST: Avoid heavily
+            if dist <= 1:
+                total_score += w_active_ghost * 10 # Instant death penalty
+            else:
+                total_score += w_active_ghost / (dist * dist) # Exponential fear
+
+    # 2. CAPSULE LOGIC
+    # Capsules are rare and valuable. Treat them like "super food".
+    if capsules:
+        # Find closest capsule
+        min_cap_dist = min([util.manhattanDistance(pacman_pos, cap) for cap in capsules])
+        total_score += w_capsule / (min_cap_dist + 1)
+    
+    # 3. FOOD LOGIC (Maze Distance)
+    # Manhattan distance gets stuck in U-shaped walls. BFS (Maze Distance) prevents this.
+    if food_list:
+        # We calculate the TRUE distance to the closest food using BFS
+        # To save CPU, we only do this for the closest food found via Manhattan
+        closest_food_manhattan = min(food_list, key=lambda f: util.manhattanDistance(pacman_pos, f))
+        
+        # BFS to find actual path length to that specific food
+        maze_dist = bfs_distance(currentGameState, pacman_pos, closest_food_manhattan)
+        
+        # Penalize having food remaining, and penalize distance to food
+        total_score -= w_food * maze_dist
+        total_score -= 4 * len(food_list) # Static penalty for count
+
+    return total_score
+
+def bfs_distance(gameState, start, target):
+    """
+    Returns the BFS (true maze) distance between start and target.
+    """
+    from util import Queue
+    walls = gameState.get_walls()
+    queue = Queue()
+    queue.push((start, 0))
+    visited = set([start])
+
+    while not queue.is_empty():
+        curr, dist = queue.pop()
+        if curr == target:
+            return dist
+        
+        x, y = int(curr[0]), int(curr[1])
+        # Check neighbors
+        for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            next_x, next_y = x + dx, y + dy
+            if not walls[next_x][next_y]:
+                next_pos = (next_x, next_y)
+                if next_pos not in visited:
+                    visited.add(next_pos)
+                    queue.push((next_pos, dist + 1))
+    
+    return util.manhattanDistance(start, target) # Fallback
+
 class MultiAgentSearchAgent(Agent):
     """
     This class provides some common elements to all of your

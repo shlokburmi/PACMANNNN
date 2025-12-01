@@ -1,0 +1,304 @@
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.222', '0.553', '0.201', '0.357', '0.519']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 4
+  - Nodes Pruned: 12
+  - Path Cost: 2
+  - Pruning Efficiency: 75.0%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.196', '0.621', '0.259', '0.596', '0.701']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 12
+  - Nodes Pruned: 44
+  - Path Cost: 4
+  - Pruning Efficiency: 78.6%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.005', '0.468', '0.853', '0.742', '0.861']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 2
+  - Nodes Pruned: 4
+  - Path Cost: 1
+  - Pruning Efficiency: 66.7%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.302', '0.703', '0.777', '0.533', '0.078']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 4
+  - Nodes Pruned: 12
+  - Path Cost: 2
+  - Pruning Efficiency: 75.0%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.746', '0.929', '0.607', '0.570', '0.209']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 20
+  - Nodes Pruned: 75
+  - Path Cost: 8
+  - Pruning Efficiency: 78.9%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.486', '0.684', '0.468', '0.473', '0.624']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 16
+  - Nodes Pruned: 53
+  - Path Cost: 5
+  - Pruning Efficiency: 76.8%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.115', '0.055', '0.717', '0.911', '0.478']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 12
+  - Nodes Pruned: 41
+  - Path Cost: 4
+  - Pruning Efficiency: 77.4%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.648', '0.127', '0.190', '0.666', '0.374']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 2
+  - Nodes Pruned: 4
+  - Path Cost: 1
+  - Pruning Efficiency: 66.7%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.946', '0.737', '0.066', '0.255', '0.842']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 56
+  - Nodes Pruned: 240
+  - Path Cost: 37
+  - Pruning Efficiency: 81.1%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.708', '0.593', '0.293', '0.193', '0.173']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 2
+  - Nodes Pruned: 4
+  - Path Cost: 1
+  - Pruning Efficiency: 66.7%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.970', '0.071', '0.442', '0.875', '0.574']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 2
+  - Nodes Pruned: 4
+  - Path Cost: 1
+  - Pruning Efficiency: 66.7%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.394', '0.075', '0.429', '0.703', '0.455']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 2
+  - Nodes Pruned: 4
+  - Path Cost: 1
+  - Pruning Efficiency: 66.7%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+
+============================================================
+ULTIMATE INTEGRATED SEARCH ALGORITHM
+SMHA* + Genetic Algorithm + Alpha-Beta Pruning
+============================================================
+
+[PHASE 1] Genetic Algorithm: Optimizing heuristic weights...
+  [GA] Evolving heuristic weights...
+  [OK] Optimized weights: ['0.259', '0.577', '0.539', '0.629', '0.443']
+
+[PHASE 2] Alpha-Beta Pruning: Initializing pruner...
+  [OK] Alpha-Beta pruner initialized
+
+[PHASE 3] SMHA*: Running optimized multi-heuristic search...
+
+[RESULTS] GOAL FOUND!
+  - Nodes Expanded: 2
+  - Nodes Pruned: 4
+  - Path Cost: 1
+  - Pruning Efficiency: 66.7%
+  - Score: OPTIMAL MAXIMUM
+============================================================
+
+Pacman emerges victorious! Score: 562
+Average Score: 562.0
+Scores:         562.0
+Win Rate:       1/1 (1.00)
+Record:         Win
